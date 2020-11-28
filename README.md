@@ -46,3 +46,13 @@ If you want to learn more about building native executables, please consult http
 # Command Mode
 
 Guide: https://quarkus.io/guides/command-mode-reference
+
+---
+
+### Artigos
+
+**Quarkus Cheat-Sheet:** [https://lordofthejars.github.io/quarkus-cheat-sheet/](https://lordofthejars.github.io/quarkus-cheat-sheet/)
+
+[https://quarkus.io/blog/introducing-command-mode/](https://quarkus.io/blog/introducing-command-mode/)
+
+[https://quarkus.io/guides/logging#quarkus-log-logging-log-config_quarkus.log.file](https://quarkus.io/guides/logging#quarkus-log-logging-log-config_quarkus.log.file)
