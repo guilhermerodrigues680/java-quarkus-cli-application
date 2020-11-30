@@ -36,7 +36,7 @@ jobs:
 
       - name: 'Packaging native'
         run: |
-          ./mvnw.cmd -B clean package -Pnative -Dquarkus.native.container-build=false
+          ./mvnw.cmd -B clean package -Pnative
           dir target
 
       # - name: 'Get Version Number'
