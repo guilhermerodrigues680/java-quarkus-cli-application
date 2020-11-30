@@ -15,16 +15,18 @@ jobs:
       - name: 'Get Version Number'
         run: |
           ./mvnw --version
-          ./mvnw clean package -Dquarkus.package.type=uber-jar
-          ls -lah target
       - name: 'Packaging uber-jar'
         run: |
-          ./mvnw clean package -Dquarkus.package.type=uber-jar
+          ./mvnw -B clean package -Dquarkus.package.type=uber-jar
           ls -lah target
-      # - name: 'Setup GraalVM Environment'
-      #   uses: DeLaGuardo/setup-graalvm@3.0
-      #   with:
-      #     graalvm-version: '20.3.0.java11'
-      # - name: 'Install Native Image Plugin'
-      #   run: |
-      #     gu install native-image
+      - name: 'Setup GraalVM Environment'
+        uses: DeLaGuardo/setup-graalvm@3.0
+        with:
+          graalvm-version: '20.3.0.java11'
+      - name: 'Install Native Image Plugin'
+        run: |
+          gu install native-image
+      - name: 'Build Native Linux'
+        run: |
+          ./mvnw clean package -Pnative -Dquarkus.native.container-build=false
+          ls -lah target
