@@ -22,9 +22,9 @@ jobs:
         run: |
           graalvm-ce-java11-20.1.0\bin\gu.cmd install native-image
       
-      # - name: 'Set up Visual C Build Tools Workload for Visual Studio 2017 Build Tools'
-      #   run: |
-      #     choco install visualstudio2017-workload-vctools
+      - name: 'Set up Visual C Build Tools Workload for Visual Studio 2017 Build Tools'
+        run: |
+          choco install visualstudio2017-workload-vctools
       
       - name: 'Gui'
         run: |
@@ -34,8 +34,12 @@ jobs:
         run: |
           ./mvnw.cmd --version
 
-      - name: 'Packaging native'
+      - name: 'Build Native Image'
+        shell: cmd
+        env:
+          JAVA_HOME: ./graalvm-ce-java11-20.1.0
         run: |
+          call "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
           ./mvnw.cmd -B clean package -Pnative
           dir target
 
