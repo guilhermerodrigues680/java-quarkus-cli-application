@@ -33,7 +33,12 @@ jobs:
       - name: 'Version'
         run: |
           ./mvnw.cmd --version
-      
+
+      - name: 'Packaging native'
+        run: |
+          ./mvnw.cmd -B clean package -Pnative -Dquarkus.native.container-build=false
+          dir target
+
       # - name: 'Get Version Number'
       #   run: |
       #     echo "::set-env name=VERSION::$(./gradlew properties -q | grep "version:" | awk '{print $2}')"
