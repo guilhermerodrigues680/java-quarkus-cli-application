@@ -26,10 +26,6 @@ jobs:
         run: |
           choco install visualstudio2017-workload-vctools
       
-      - name: 'Gui'
-        run: |
-          dir
-      
       - name: 'Version'
         run: |
           ./mvnw.cmd --version
@@ -41,7 +37,16 @@ jobs:
         run: |
           call "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
           ./mvnw.cmd -B clean package -Pnative
+
+      - name: 'DIR TARGET'
+        run: |
           dir target
+
+      - name: 'Upload native'
+        uses: actions/upload-artifact@v2
+        with:
+          name: projeto-0.0.1-SNAPSHOT-runner
+          path: target/projeto-0.0.1-SNAPSHOT-runner
 
       # - name: 'Get Version Number'
       #   run: |
