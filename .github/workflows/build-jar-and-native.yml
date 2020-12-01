@@ -73,6 +73,7 @@ jobs:
           name: 'upload_url.txt'
 
       - name: 'Get Upload URL'
+        id: meu_teste
         run: |
           UPLOAD_URL=$(cat upload_url.txt)
           echo $UPLOAD_URL
@@ -88,7 +89,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{env.UPLOAD_URL}}
+          # upload_url: ${{env.UPLOAD_URL}}
+          upload_url: ${{ steps.meu_teste.UPLOAD_URL }}
           asset_path: ./target/projeto-0.0.1-SNAPSHOT-runner.jar
           asset_name: projeto-0.0.1-SNAPSHOT-runner-${{matrix.label}}.jar
           asset_content_type: application/java-archive
