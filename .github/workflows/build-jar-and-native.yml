@@ -1,7 +1,43 @@
 name: Build JAR e Nativo Linux, Mac e Windows
 on: push
 jobs:
+  build-create-release:
+    name: Create Release
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set release name
+        run: echo "::set-output name=TAG_NAME::v$(date '+%d-%m-%Y--%H-%M-%S')"
+        id: release-name-generator
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: ${{ steps.release-name-generator.outputs.TAG_NAME }}
+          release_name: Release ${{ steps.release-name-generator.outputs.TAG_NAME }}
+          body: |
+            Changes in this Release
+            - ${{ github.sha }}
+          draft: false
+          prerelease: false
+      
+      - name: 'Write Upload URL To File'
+        run: |
+          echo "${{steps.create_release.outputs.upload_url}}" > upload_url.txt
+
+      - name: 'Publish Upload URL'
+        uses: actions/upload-artifact@v2
+        with:
+          name: 'upload_url.txt'
+          path: 'upload_url.txt'
+
   build-linux-image:
+    needs: [build-create-release]
     name: 'Build Non-Windows Image'
     strategy:
       matrix:
@@ -36,6 +72,25 @@ jobs:
           name: projeto-0.0.1-SNAPSHOT-runner-${{matrix.label}}.jar
           path: target/projeto-0.0.1-SNAPSHOT-runner.jar
 
+      - name: 'Get Upload File - URL'
+        uses: actions/download-artifact@v2
+        with:
+          name: 'upload_url.txt'
+
+      - name: Get Upload URL
+        id: get-upload-url
+        run: echo "::set-output name=UPLOAD_URL::$(cat upload_url.txt)"
+
+      - name: Upload Release Asset JAR
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get-upload-url.outputs.UPLOAD_URL }}
+          asset_path: ./target/projeto-0.0.1-SNAPSHOT-runner.jar
+          asset_name: projeto-0.0.1-SNAPSHOT-runner-${{matrix.label}}.jar
+          asset_content_type: application/java-archive
+
       - name: 'Setup GraalVM Environment'
         uses: DeLaGuardo/setup-graalvm@3.0
         with:
@@ -50,13 +105,24 @@ jobs:
           ./mvnw -B clean package -Pnative -Dquarkus.native.container-build=false
           ls -lah target
 
-      - name: 'Upload native'
+      - name: 'Upload native artifact'
         uses: actions/upload-artifact@v2
         with:
           name: projeto-0.0.1-SNAPSHOT-runner-${{matrix.label}}
           path: target/projeto-0.0.1-SNAPSHOT-runner
 
+      - name: Upload Release Asset Native ${{matrix.label}}
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get-upload-url.outputs.UPLOAD_URL }}
+          asset_path: ./target/projeto-0.0.1-SNAPSHOT-runner
+          asset_name: projeto-0.0.1-SNAPSHOT-runner-${{matrix.label}}
+          asset_content_type: application/octet-stream
+
   build-windows-image:
+    needs: [build-create-release]
     name: 'Build Windows Image'
     runs-on: windows-latest
     steps:
@@ -100,3 +166,23 @@ jobs:
         with:
           name: projeto-0.0.1-SNAPSHOT-runner.exe
           path: target/projeto-0.0.1-SNAPSHOT-runner.exe
+
+      - name: 'Get Upload File - URL'
+        uses: actions/download-artifact@v2
+        with:
+          name: 'upload_url.txt'
+
+      - name: Get Upload URL
+        id: get-upload-url
+        run: echo "::set-output name=UPLOAD_URL::$(cat upload_url.txt)"
+        shell: bash
+
+      - name: Upload Release Asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get-upload-url.outputs.UPLOAD_URL }}
+          asset_path: target/projeto-0.0.1-SNAPSHOT-runner.exe
+          asset_name: projeto-0.0.1-SNAPSHOT-runner.exe
+          asset_content_type: application/octet-stream
