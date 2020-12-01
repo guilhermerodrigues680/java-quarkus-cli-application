@@ -55,5 +55,5 @@ jobs:
       - name: 'Upload native'
         uses: actions/upload-artifact@v2
         with:
-          name: projeto-0.0.1-SNAPSHOT-runner
+          name: projeto-0.0.1-SNAPSHOT-runner-${{matrix.label}}
           path: target/projeto-0.0.1-SNAPSHOT-runner
