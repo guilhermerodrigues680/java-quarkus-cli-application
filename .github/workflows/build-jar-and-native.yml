@@ -14,8 +14,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          tag_name: ${date} # ${{ github.sha }}
-          release_name: Release ${date} # ${{ github.sha }}
+          tag_name: $(date) # ${{ github.sha }}
+          release_name: Release $(date) # ${{ github.sha }}
           body: |
             Changes in this Release
             - ${{ github.sha }}
@@ -73,8 +73,9 @@ jobs:
           name: 'upload_url.txt'
 
       - name: 'Get Upload URL'
-        run: |
-          echo "::set-env name=UPLOAD_URL::$(cat upload_url.txt)"
+        run: echo UPLOAD_URL=$UPLOAD_URL
+        env:
+          UPLOAD_URL: $(cat upload_url.txt)
 
       - name: Upload Release Asset JAR
         # id: upload-release-asset 
@@ -169,8 +170,9 @@ jobs:
           name: 'upload_url.txt'
 
       - name: 'Get Upload URL'
-        run: |
-          echo "::set-env name=UPLOAD_URL::$(cat upload_url.txt)"
+        run: echo UPLOAD_URL=$UPLOAD_URL
+        env:
+          UPLOAD_URL: $(cat upload_url.txt)
         shell: bash
 
       - name: Upload Release Asset
